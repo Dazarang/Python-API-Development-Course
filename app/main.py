@@ -21,7 +21,7 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool = True
-    rating: Optional[int] = None
+    # rating: Optional[int] = None
     
     
 while True:
@@ -66,20 +66,27 @@ def test_posts(db: Session = Depends(get_db)):
 
 
 @app.get("/posts")
-def get_posts():
-    cursor.execute("""SELECT * FROM posts """)
-    posts = cursor.fetchall()
+def get_posts(db: Session = Depends(get_db)):
+    # cursor.execute("""SELECT * FROM posts """)
+    # posts = cursor.fetchall()
+    
+    posts = db.query(models.Post).all()
 
     return {"data": posts}
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED) 
-def create_posts(post: Post): 
-    cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, 
-                   (post.title, post.content, post.published))
+def create_posts(post: Post, db: Session = Depends(get_db)): 
+    # cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, 
+    #                (post.title, post.content, post.published))
 
-    new_post = cursor.fetchone() # Fetches the returned data from the database
-    conn.commit() # Commits the data to the database
+    # new_post = cursor.fetchone() # Fetches the returned data from the database
+    # conn.commit() # Commits the data to the database
+    
+    new_post = models.Post(**post.dict()) # **post.dict() unpacks the post.dict() into a dictionary
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post) # Refreshes the data from the database and updates the object
     
     return {"data": new_post} # Returns the post
 
