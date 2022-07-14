@@ -70,8 +70,9 @@ def create_posts(post: Post): # Automaticly extracts the data via post
 
 @app.get("/posts/{id}") # Extracts the id from the url, the id is a path parameter
 def get_post(id: int): #Fast api will auto extract that id and we can pass it directly to function
-    
-    post = find_post(int(id)) # Finds the post with the id, manually make it an int
+    cursor.execute("""SELECT * FROM posts WHERE id = %s""", (id,))
+    post = cursor.fetchone()    
+ 
     if not post: 
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, 
                             detail= f"Post with id {id} not found") # Raises an error if post is not found
