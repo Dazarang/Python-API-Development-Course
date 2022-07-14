@@ -1,6 +1,3 @@
-from random import randrange
-from turtle import pos
-from typing import Optional
 from fastapi import Body, FastAPI, Response, status, HTTPException, Depends
 import psycopg2
 from psycopg2.extras import RealDictCursor
