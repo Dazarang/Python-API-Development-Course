@@ -1,12 +1,21 @@
 from random import randrange
 from typing import Optional
-from fastapi import Body, FastAPI, Response, status, HTTPException
+from fastapi import Body, FastAPI, Response, status, HTTPException, Depends
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
+from sqlalchemy.orm import Session
+from . import models
+from .database import engine, get_db
+
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+
+
 
 # Class using pydantic to validate our request body
 class Post(BaseModel):
@@ -48,6 +57,10 @@ def find_index_post(id):
 @app.get("/")
 def root(): # The function is called root, async in the beginningoptional i.e you want to talk to the server asyncronously
     return {"message": "Hello World"}
+
+@app.get("/sqlalchemy")
+def test_posts(db: Session = Depends(get_db)):
+    return {"status": "Success"}
 
 @app.get("/posts")
 def get_posts():
