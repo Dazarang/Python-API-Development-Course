@@ -81,15 +81,14 @@ def get_post(id: int): #Fast api will auto extract that id and we can pass it di
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)  # Extracts the id from the url, the id is a path parameter
 def delete_post(id: int):
-    # deleting post
-    # find the index in the array that has required ID 
-    # my_posts.pop(index)
-    index = find_index_post(id)
-    
-    if index is None:
-        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"Post with id {id} does not exist")
-    
-    my_posts.pop(index)
+    cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING * """, (id,))
+    deleted_post = cursor.fetchone() # Fetches the returned data from the database
+    conn.commit() # Commits the data to the database
+        
+    if deleted_post is None:
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, 
+                            detail=f"Post with id {id} does not exist")
+        
     return Response(status_code=status.HTTP_204_NO_CONTENT) 
 
 
