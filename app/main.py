@@ -52,10 +52,10 @@ def get_posts(db: Session = Depends(get_db)):
     
     posts = db.query(models.Post).all()
 
-    return {"data": posts}
+    return posts
 
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED) 
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model = schemas.Post) 
 def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)): 
     # cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, 
     #                (post.title, post.content, post.published))
@@ -68,7 +68,7 @@ def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_post) # Refreshes the data from the database and updates the object
     
-    return {"data": new_post} # Returns the post
+    return new_post # Returns the post
 
 
 @app.get("/posts/{id}") # Extracts the id from the url, the id is a path parameter
@@ -121,4 +121,4 @@ def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends
     post_query.update(updated_post.dict(), synchronize_session= False)
     db.commit()
     
-    return {"data": post_query.first()} 
+    return post_query.first()
