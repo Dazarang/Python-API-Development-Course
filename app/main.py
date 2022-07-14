@@ -59,11 +59,14 @@ def get_posts():
 # Extract data and send it back
 @app.post("/posts", status_code=status.HTTP_201_CREATED) 
 def create_posts(post: Post): # Automaticly extracts the data via post
-    post_dict = post.dict() # Converts the post to a dictionary
-    post_dict["id"] = randrange(0, 1000000) # Adds an id to the post
-    my_posts.append(post_dict) # Adds the post to the list
+    cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, 
+                   (post.title, post.content, post.published))
+    # %s is a variable that is used to insert data into the database
+    # First %s is the title, second %s is the content, third %s is the published
     
-    return {"data": post_dict} # Returns the post
+    new_post = cursor.fetchone() # Fetches the returned data from the database
+    conn.commit() # Commits the data to the database
+    return {"data": new_post} # Returns the post
 
 @app.get("/posts/{id}") # Extracts the id from the url, the id is a path parameter
 def get_post(id: int): #Fast api will auto extract that id and we can pass it directly to function
