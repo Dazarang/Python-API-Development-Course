@@ -27,12 +27,8 @@ def get_posts():
 
 # Extract data and send it back
 @app.post("/posts")
-#def create_posts(payLoad: dict = Body(...)): # Extracts fields from body and convert to dictionary and store in payLoad
 def create_posts(post: Post): # Automaticly extracts the data via post
-    print(post)
-    print(post.dict()) # Converts to dictionary
     
     my_posts.append(post.dict())
     return {"data": post}
 
-# Data we want: title str, content str ##, category, Bool published. We use pydantic to validate the data
