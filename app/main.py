@@ -2,12 +2,11 @@ from random import randrange
 from turtle import pos
 from typing import Optional
 from fastapi import Body, FastAPI, Response, status, HTTPException, Depends
-from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
 from sqlalchemy.orm import Session
-from . import models
+from . import models, schemas
 from .database import engine, get_db
 
 
@@ -15,13 +14,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-
-# Class using pydantic to validate our request body
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-    
     
 while True:
     
@@ -56,14 +48,6 @@ def root():
     return {"message": "Hello World"}
 
 
-@app.get("/sqlalchemy")
-def test_posts(db: Session = Depends(get_db)):
-    
-    posts = db.query(models.Post).all() # Query all posts from the database
-    
-    return {"data": posts}
-
-
 @app.get("/posts")
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts """)
@@ -75,7 +59,7 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED) 
-def create_posts(post: Post, db: Session = Depends(get_db)): 
+def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)): 
     # cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, 
     #                (post.title, post.content, post.published))
 
@@ -122,7 +106,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
 
 
 @app.put("/posts/{id}")
-def update_post(id: int, post: Post, db: Session = Depends(get_db)):
+def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db)):
     
     # cursor.execute("""Update posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING * """, 
     #                (post.title, post.content, post.published, id))
@@ -131,13 +115,13 @@ def update_post(id: int, post: Post, db: Session = Depends(get_db)):
     
     post_query = db.query(models.Post).filter(models.Post.id == id)
     
-    updated_post = post_query.first()
+    post = post_query.first()
     
-    if updated_post is None:
+    if post is None:
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, 
                             detail=f"Post with id {id} does not exist")
     
-    post_query.update(post.dict(), synchronize_session= False)
+    post_query.update(updated_post.dict(), synchronize_session= False)
     db.commit()
     
     return {"data": post_query.first()} 
