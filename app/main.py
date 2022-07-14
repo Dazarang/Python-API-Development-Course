@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import Body, FastAPI, Response, status, HTTPException, Depends
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -45,7 +46,7 @@ def root():
     return {"message": "Hello World"}
 
 
-@app.get("/posts")
+@app.get("/posts")#, response_model = List[schemas.Post])
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts """)
     # posts = cursor.fetchall()
@@ -71,7 +72,7 @@ def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     return new_post # Returns the post
 
 
-@app.get("/posts/{id}") # Extracts the id from the url, the id is a path parameter
+@app.get("/posts/{id}", response_model= schemas.Post) # Extracts the id from the url, the id is a path parameter
 def get_post(id: int,  db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts WHERE id = %s""", (id,))
     # post = cursor.fetchone()
@@ -81,7 +82,7 @@ def get_post(id: int,  db: Session = Depends(get_db)):
     if not post: 
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, 
                             detail= f"Post with id {id} not found") # Raises an error if post is not found
-    return {"post_detail": post}
+    return post
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)  # Extracts the id from the url, the id is a path parameter
@@ -102,7 +103,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT) 
 
 
-@app.put("/posts/{id}")
+@app.put("/posts/{id}", response_model = schemas.Post)
 def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db)):
     
     # cursor.execute("""Update posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING * """, 
