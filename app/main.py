@@ -51,7 +51,10 @@ def root(): # The function is called root, async in the beginningoptional i.e yo
 
 @app.get("/posts")
 def get_posts():
-    return {"data": my_posts}
+    cursor.execute("""SELECT * FROM posts """)
+    posts = cursor.fetchall()
+
+    return {"data": posts}
 
 # Extract data and send it back
 @app.post("/posts", status_code=status.HTTP_201_CREATED) 
