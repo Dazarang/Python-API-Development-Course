@@ -6,7 +6,7 @@ import time
 from sqlalchemy.orm import Session
 from . import models, schemas, utils
 from .database import engine, get_db
-from .routers import post, user
+from .routers import post, user, auth
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -43,6 +43,7 @@ def find_index_post(id):
 
 app.include_router(post.router) # Include the router from the post.py file
 app.include_router(user.router) # Include the router from the user.py file
+app.include_router(auth.router) # Include the router from the auth.py file
 
 @app.get("/")
 def root():
