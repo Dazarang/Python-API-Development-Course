@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from .. import models, schemas
 from ..database import get_db
 
-router = APIRouter()
+router = APIRouter(prefix="/posts", tags=["Posts"])
 
-@router.get("/posts", response_model = List[schemas.Post])
+@router.get("/", response_model = List[schemas.Post])
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts """)
     # posts = cursor.fetchall()
@@ -16,7 +16,7 @@ def get_posts(db: Session = Depends(get_db)):
     return posts
 
 
-@router.post("/posts", status_code=status.HTTP_201_CREATED, response_model = schemas.Post) 
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model = schemas.Post) 
 def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)): 
     # cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, 
     #                (post.title, post.content, post.published))
@@ -32,7 +32,7 @@ def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     return new_post # Returns the post
 
 
-@router.get("/posts/{id}", response_model= schemas.Post) # Extracts the id from the url, the id is a path parameter
+@router.get("/{id}", response_model= schemas.Post) # Extracts the id from the url, the id is a path parameter
 def get_post(id: int,  db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts WHERE id = %s""", (id,))
     # post = cursor.fetchone()
@@ -45,7 +45,7 @@ def get_post(id: int,  db: Session = Depends(get_db)):
     return post
 
 
-@router.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)  # Extracts the id from the url, the id is a path parameter
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)  # Extracts the id from the url, the id is a path parameter
 def delete_post(id: int, db: Session = Depends(get_db)):
     # cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING * """, (id,))
     # deleted_post = cursor.fetchone() # Fetches the returned data from the database
@@ -63,7 +63,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT) 
 
 
-@router.put("/posts/{id}", response_model = schemas.Post)
+@router.put("/{id}", response_model = schemas.Post)
 def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db)):
     
     # cursor.execute("""Update posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING * """, 
