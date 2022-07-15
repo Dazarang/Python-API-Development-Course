@@ -13,6 +13,7 @@ def get_posts(db: Session = Depends(get_db),
     # posts = cursor.fetchall()
     
     posts = db.query(models.Post).all()
+    # posts = db.query(models.Post).filter(models.Post.owner_id == current_user.id).all() # Only show posts that belong to the current user
 
     return posts
 
@@ -46,6 +47,11 @@ def get_post(id: int,  db: Session = Depends(get_db),
     if not post: 
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, 
                             detail= f"Post with id {id} not found") # Raises an error if post is not found
+        
+    if post.owner_id != current_user.id:
+        raise HTTPException(status_code= status.HTTP_403_FORBIDDEN,
+                            detail=f"Not authorized to perform request action")
+    
     return post
 
 
