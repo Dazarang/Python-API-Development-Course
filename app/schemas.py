@@ -1,5 +1,8 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
+from typing import Optional
+
+########################## POST ##########################
 
 class PostBase(BaseModel):
     title: str
@@ -17,7 +20,7 @@ class Post(PostBase): # Response model
     class Config: # This is a class that is used to configure the Post class to be able to be used in the FastAPI framework
         orm_mode = True 
         
-        
+############################ USER ##############################################        
         
 class UserCreate(BaseModel): # Response model
     email: EmailStr
@@ -34,3 +37,13 @@ class UserOut(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    
+############################ TOKEN ##############################################
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    
+
+class TokenData(BaseModel):
+    id: Optional[str] = None
