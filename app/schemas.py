@@ -41,6 +41,10 @@ class Post(PostBase): # Response model
     class Config: # This is a class that is used to configure the Post class to be able to be used in the FastAPI framework
         orm_mode = True 
         
+class PostOut(BaseModel):
+    Post: Post
+    votes: int
+        
     
 ############################ TOKEN ##############################################
 
