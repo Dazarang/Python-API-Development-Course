@@ -27,7 +27,7 @@ app.include_router(vote.router) # Include the router from the vote.py file
 
 @app.get("/")
 def root():
-    return {"message": "Hello World"}
+    return {"message": "Hello World!!"}
 
 
 
