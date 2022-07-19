@@ -6,8 +6,8 @@ In this project I've learned:
 - Path operations
 - CRUD operations
 - Postman
-- Databases with Postgres
-    - Managing Postgres with PgAdmin GUI
+- Databases with PostgreSQL
+    - Managing PostgreSQL with PgAdmin GUI
     - SQL Query and SQL operators
         - Keywords such as IN, LIKE, etc.
         - joins
@@ -24,7 +24,7 @@ In this project I've learned:
 - Environment variables
 - Database migration tool - Alembic
 - Heroku
-    - Adding Postgres database
+    - Adding PostgreSQL database
     - Environment variables
 - Testing
     - Pytest
